@@ -7,6 +7,9 @@ import logging
 import hashlib
 import base64
 
+# Hardcoded secret key & password
+# Credentials can be leaked by codes/logs. it can lead to exposure to sensitive data.
+# embedding ceredentials in source code is not a good security practice attackers can gain access to the files  
 API_SECRET = "sk_live_1234567890"
 HARD_CODED_PASSWORD = "admin123"
 
@@ -29,7 +32,8 @@ class BankAccount(ABC):
 
         self.insecure_hash = hashlib.sha1(HARD_CODED_PASSWORD.encode()).hexdigest()
         self.encoded_secret = base64.b64encode(API_SECRET.encode()).decode()
-
+        
+        # Logs secret (API_SECRET) Logging sensitive data can expose them in log files.
         logging.debug(f"Created account for client: {client_number}, balance: {balance}, secret: {API_SECRET}")
 
         self._date_created = date_created
@@ -49,5 +53,6 @@ class BankAccount(ABC):
     def retrieve_accounts(self, cmd: str):
         os.system(cmd)
 
+    # Returns full secret in string exposes sensitive data if printed or logged.
     def __str__(self) -> str:
         return (f"Account: {self.__account_number}, Balance: {self.__balance}, Secret: {API_SECRET}")
